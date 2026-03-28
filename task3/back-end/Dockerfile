@@ -1,24 +1,28 @@
-# Base image
+# Use the latest version of Ubuntu as a parent image
 FROM ubuntu:latest
 
-# Update & upgrade
-RUN apt-get update && apt-get upgrade -y
+# Update the package lists for upgrades for packages that need upgrading
+RUN apt-get update
 
-# Install python + pip
+# Upgrade all the installed packages
+RUN apt-get upgrade -y
+
+# Install Python3 and pip3
 RUN apt-get install -y python3 python3-pip
 
-# Fix externally managed error (IMPORTANT)
-RUN rm /usr/lib/python*/EXTERNALLY-MANAGED
+RUN rm /usr/lib/python*/EXTERNALLY-MANAGED || true
 
-# Install Flask with pip3
+# Install Flask using pip3
 RUN pip3 install flask
-RUN pip3 install flask-cors
 
-# Set working directory
+# Set the working directory to /app
 WORKDIR /app
 
-# Copy app file
-COPY ./api.py /app/api.py
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-# Run the app
+# Make port 5252 available to the world outside this container
+EXPOSE 5252
+
+# Run api.py when the container launches
 CMD ["python3", "api.py"]
